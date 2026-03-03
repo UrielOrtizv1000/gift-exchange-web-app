@@ -1,4 +1,4 @@
-# Gift Exchange Web App 🎁
+# Gift Exchange Web App
 
 ## Overview
 Gift Exchange Web App is a front-end web application designed to manage and automate a gift exchange event.  
@@ -8,13 +8,13 @@ This project was developed strictly using front-end technologies as part of an a
 
 ---
 
-## 👥 Team Members
+## Team Members
 - Uriel Ezequiel Ortiz Rosales
 - Oscar Iván Gómez Ruíz
 
 ---
 
-## 🛠 Technologies Used
+## Technologies Used
 - HTML5
 - CSS3
 - JavaScript (Vanilla)
@@ -24,7 +24,7 @@ This project was developed strictly using front-end technologies as part of an a
 
 ---
 
-## 🚀 Features
+## Features
 
 ### Event Configuration
 - Register the organizer (with option to participate or not)
@@ -64,7 +64,7 @@ This project was developed strictly using front-end technologies as part of an a
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 gift-exchange-web-app/
 │
 ├── index.html
@@ -79,12 +79,12 @@ gift-exchange-web-app/
 
 ---
 
-## 📌 Academic Notes
+## Academic Notes
 - This project does NOT use any back-end technologies.
 - All logic and persistence are handled on the client side.
 - The application was developed for educational purposes only.
 
 ---
 
-## 📄 License
+## License
 This project was created for academic purposes.

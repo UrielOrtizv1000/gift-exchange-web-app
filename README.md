@@ -68,15 +68,66 @@ This project was developed strictly using front-end technologies as part of an a
 gift-exchange-web-app/
 │
 ├── index.html
+├── event.html
+├── summary.html
+├── draw.html
+├── 404.html
+│
+├── README.md
+├── LICENSE
+├── .gitignore
+│
 ├── assets/
-│ ├── css/
-│ ├── js/
-│ └── img/
-├── docs/
-│ ├── Project_Report.pdf
-│ └── Rubric.xlsx
-└── README.md
-
+│   ├── css/
+│   │   ├── base.css
+│   │   ├── layout.css
+│   │   ├── components.css
+│   │   ├── pages.css
+│   │   └── responsive.css
+│   │
+│   ├── fonts/
+│   │
+│   ├── img/
+│   │   ├── logo.svg
+│   │   ├── favicon.ico
+│   │   └── icons/
+│   │
+│   └── js/
+│       ├── core/
+│       │   ├── init.js
+│       │   ├── app.js
+│       │   ├── config.js
+│       │   └── routes.js
+│       │
+│       ├── modules/
+│       │   ├── organizer.js
+│       │   ├── participants.js
+│       │   ├── exclusions.js
+│       │   ├── eventDetails.js
+│       │   ├── budget.js
+│       │   └── drawEngine.js
+│       │
+│       ├── services/
+│       │   ├── storageService.js
+│       │   ├── validationService.js
+│       │   └── shuffleService.js
+│       │
+│       ├── ui/
+│       │   ├── dragDrop.js
+│       │   ├── renderer.js
+│       │   └── notifications.js
+│       │
+│       └── utils/
+│           ├── constants.js
+│           └── helpers.js
+│
+├── data/
+│   └── mockData.json
+│
+└── docs/
+    ├── Screenshots/
+    ├── Project_Report.pdf
+    └── Rubric.xlsx
 ---
 
 ## Academic Notes

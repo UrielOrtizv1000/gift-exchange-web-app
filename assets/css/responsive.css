@@ -1,0 +1,298 @@
+/* =========================
+   RESPONSIVE.CSS
+   Ajustes por tamaño de pantalla
+========================= */
+
+/* ===== TABLET Y PANTALLAS MEDIAS ===== */
+@media (max-width: 991.98px) {
+  .hero-section {
+    min-height: auto;
+    padding: 2.5rem 0;
+  }
+
+  .hero-left {
+    padding: 2.2rem 2rem;
+  }
+
+  .hero-right {
+    padding: 2rem;
+    border-left: none;
+    border-top: 1px solid rgba(170, 143, 102, 0.18);
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    line-height: 1.12;
+  }
+
+  .hero-text {
+    max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .logo-box {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .feature-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .section-card {
+    padding: 1.3rem;
+  }
+
+  .result-card .d-flex {
+    align-items: flex-start !important;
+  }
+}
+
+/* ===== MÓVIL ===== */
+@media (max-width: 767.98px) {
+  body {
+    background:
+      linear-gradient(180deg, #fff8ef 0%, #FFEEDB 100%);
+  }
+
+  .navbar-custom .container {
+    justify-content: center;
+  }
+
+  .brand-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-section {
+    padding: 1.8rem 0;
+  }
+
+  .hero-card {
+    border-radius: 24px;
+  }
+
+  .hero-left {
+    padding: 1.7rem 1.2rem;
+  }
+
+  .hero-right {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .app-chip {
+    width: 100%;
+    text-align: center;
+    font-size: 0.86rem;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.16;
+    text-align: center;
+  }
+
+  .hero-text {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    max-width: 290px;
+  }
+
+  .feature-list {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+  }
+
+  .feature-item {
+    padding: 1rem;
+  }
+
+  .feature-item h6,
+  .feature-item p,
+  .footer-note {
+    text-align: center;
+  }
+
+  .logo-box {
+    width: 100%;
+    max-width: 290px;
+    border-radius: 28px;
+    padding: 1.7rem 1.2rem;
+  }
+
+  .logo-circle {
+    width: 92px;
+    height: 92px;
+  }
+
+  .logo-title,
+  .logo-subtitle {
+    text-align: center;
+  }
+
+  .section-card {
+    padding: 1.15rem;
+    border-radius: 20px;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .btn-main,
+  .btn-soft {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .d-flex.flex-wrap.gap-3.justify-content-center {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #participantsList .section-card,
+  #exclusionsList .section-card,
+  #dataExclusionsList .section-card {
+    padding: 0.9rem;
+  }
+
+  #participantsList .section-card,
+  #exclusionsList .section-card {
+    gap: 0.75rem;
+  }
+
+  .drag-area {
+    min-height: 120px;
+    padding: 1rem;
+  }
+
+  .drag-card {
+    padding: 0.8rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .result-card {
+    padding: 1rem;
+  }
+
+  .result-card .d-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.35rem !important;
+  }
+
+  #drawParticipants {
+    gap: 0.5rem !important;
+  }
+
+  .custom-badge {
+    font-size: 0.84rem;
+    padding: 0.45rem 0.8rem;
+  }
+}
+
+/* ===== MÓVIL PEQUEÑO ===== */
+@media (max-width: 575.98px) {
+  .hero-section {
+    padding: 1.4rem 0;
+  }
+
+  .hero-left {
+    padding: 1.35rem 1rem;
+  }
+
+  .hero-right {
+    padding: 1.2rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 1.78rem;
+  }
+
+  .hero-text {
+    font-size: 0.94rem;
+  }
+
+  .app-chip {
+    font-size: 0.8rem;
+  }
+
+  .btn-main,
+  .btn-soft {
+    padding: 0.82rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .feature-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .feature-icon {
+    margin-bottom: 0.35rem;
+  }
+
+  .logo-box {
+    max-width: 100%;
+    padding: 1.5rem 1rem;
+  }
+
+  .logo-circle {
+    width: 84px;
+    height: 84px;
+  }
+
+  .section-card {
+    padding: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.02rem;
+  }
+
+  .form-control,
+  .form-select {
+    padding: 0.78rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .drag-area {
+    min-height: 110px;
+  }
+
+  .result-name,
+  .result-arrow,
+  .result-receiver {
+    font-size: 0.96rem;
+  }
+}
+
+/* ===== PANTALLAS GRANDES ===== */
+@media (min-width: 1200px) {
+  .hero-left {
+    padding: 3.2rem 2.8rem;
+  }
+
+  .hero-right {
+    padding: 2.4rem;
+  }
+
+  .section-card {
+    padding: 1.6rem;
+  }
+}

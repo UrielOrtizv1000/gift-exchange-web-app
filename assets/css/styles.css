@@ -322,6 +322,9 @@ strong {
   width: 42px;
   height: 42px;
   border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: linear-gradient(135deg, rgba(97, 201, 168, 0.22), rgba(237, 155, 64, 0.18));
   border: 1px solid rgba(97, 201, 168, 0.24);
   flex-shrink: 0;

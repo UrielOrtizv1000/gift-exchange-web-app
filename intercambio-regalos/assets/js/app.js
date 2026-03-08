@@ -9,10 +9,6 @@ function initializeApp() {
     initializeEventPage();
   }
 
-  if (currentPage.includes("datos.html")) {
-    initializeDataPage();
-  }
-
   if (currentPage.includes("sorteo.html")) {
     initializeDrawPage();
   }
@@ -27,23 +23,26 @@ function initializeEventPage() {
   const budget = document.getElementById("budget");
   const customEventWrapper = document.getElementById("customEventWrapper");
   const customBudgetWrapper = document.getElementById("customBudgetWrapper");
-
   const addParticipantBtn = document.getElementById("addParticipantBtn");
   const participantName = document.getElementById("participantName");
-
   const addExclusionBtn = document.getElementById("addExclusionBtn");
-
   const saveEventBtn = document.getElementById("saveEventBtn");
+  const organizerNameInput = document.getElementById("organizerName");
+  const organizerParticipatesInput = document.getElementById("organizerParticipates");
 
   if (eventType) {
     eventType.addEventListener("change", () => {
-      customEventWrapper.classList.toggle("d-none", eventType.value !== "Otro");
+      if (customEventWrapper) {
+        customEventWrapper.classList.toggle("d-none", eventType.value !== "Otro");
+      }
     });
   }
 
   if (budget) {
     budget.addEventListener("change", () => {
-      customBudgetWrapper.classList.toggle("d-none", budget.value !== "other");
+      if (customBudgetWrapper) {
+        customBudgetWrapper.classList.toggle("d-none", budget.value !== "other");
+      }
     });
   }
 
@@ -68,16 +67,167 @@ function initializeEventPage() {
     saveEventBtn.addEventListener("click", handleSaveEvent);
   }
 
+  if (organizerNameInput) {
+    organizerNameInput.addEventListener("input", handleOrganizerChange);
+  }
+
+  if (organizerParticipatesInput) {
+    organizerParticipatesInput.addEventListener("change", handleOrganizerChange);
+  }
+
   loadEventFormData();
+  syncOrganizerAndRefreshUI();
+}
+
+/* =========================
+   ORGANIZADOR
+========================= */
+
+function handleOrganizerChange() {
+  const organizerName = document.getElementById("organizerName")?.value.trim() || "";
+  const organizerParticipates = document.getElementById("organizerParticipates")?.checked || false;
+
+  const currentData = getData();
+
+  saveEventData({
+    organizer: {
+      name: organizerName,
+      participates: organizerParticipates
+    },
+    event: currentData.event
+  });
+
+  syncOrganizerAndRefreshUI();
+}
+
+function syncOrganizerAndRefreshUI() {
+  if (typeof syncOrganizerWithParticipants === "function") {
+    syncOrganizerWithParticipants();
+  }
+
   renderParticipants();
   renderExclusionSelects();
   renderExclusions();
   renderDragParticipants();
+
+  if (typeof initializeDragAndDrop === "function") {
+    initializeDragAndDrop();
+  }
 }
 
-/* Guardar datos principales del evento */
+/* =========================
+   GUARDAR EVENTO
+========================= */
+
+function handleSaveEvent() {
+  const organizerName = document.getElementById("organizerName")?.value.trim() || "";
+  const organizerParticipates = document.getElementById("organizerParticipates")?.checked || false;
+  const eventType = document.getElementById("eventType")?.value || "";
+  const customEventName = document.getElementById("customEventName")?.value.trim() || "";
+  const eventDate = document.getElementById("eventDate")?.value || "";
+  const budget = document.getElementById("budget")?.value || "";
+  const customBudget = document.getElementById("customBudget")?.value.trim() || "";
+
+  const finalBudget = budget === "other" ? customBudget : budget;
+
+  const eventData = {
+    organizer: {
+      name: organizerName,
+      participates: organizerParticipates
+    },
+    event: {
+      type: eventType,
+      customName: customEventName,
+      date: eventDate,
+      budget: finalBudget
+    }
+  };
+
+  saveEventData(eventData);
+
+  if (typeof syncOrganizerWithParticipants === "function") {
+    syncOrganizerWithParticipants();
+  }
+
+  if (typeof validateEventForm === "function") {
+    const isValid = validateEventForm();
+    if (!isValid) return;
+  }
+
+  renderParticipants();
+  renderExclusionSelects();
+  renderExclusions();
+  renderDragParticipants();
+
+  if (typeof initializeDragAndDrop === "function") {
+    initializeDragAndDrop();
+  }
+
+  showSimpleAlert("La información del evento se guardó correctamente.");
+}
+
+function loadEventFormData() {
+  const data = getData();
+
+  const organizerName = document.getElementById("organizerName");
+  const organizerParticipates = document.getElementById("organizerParticipates");
+  const eventType = document.getElementById("eventType");
+  const customEventName = document.getElementById("customEventName");
+  const eventDate = document.getElementById("eventDate");
+  const budget = document.getElementById("budget");
+  const customBudget = document.getElementById("customBudget");
+  const customEventWrapper = document.getElementById("customEventWrapper");
+  const customBudgetWrapper = document.getElementById("customBudgetWrapper");
+
+  if (!organizerName) return;
+
+  organizerName.value = data.organizer?.name || "";
+  organizerParticipates.checked = data.organizer?.participates ?? true;
+  eventType.value = data.event?.type || "";
+  customEventName.value = data.event?.customName || "";
+  eventDate.value = data.event?.date || "";
+
+  const predefinedBudgets = ["100", "200", "300", "500"];
+
+  if (predefinedBudgets.includes(String(data.event?.budget))) {
+    budget.value = String(data.event.budget);
+    customBudget.value = "";
+    if (customBudgetWrapper) {
+      customBudgetWrapper.classList.add("d-none");
+    }
+  } else if (data.event?.budget) {
+    budget.value = "other";
+    customBudget.value = data.event.budget;
+    if (customBudgetWrapper) {
+      customBudgetWrapper.classList.remove("d-none");
+    }
+  } else {
+    budget.value = "";
+    customBudget.value = "";
+    if (customBudgetWrapper) {
+      customBudgetWrapper.classList.add("d-none");
+    }
+  }
+
+  if (data.event?.type === "Otro") {
+    if (customEventWrapper) {
+      customEventWrapper.classList.remove("d-none");
+    }
+  } else {
+    if (customEventWrapper) {
+      customEventWrapper.classList.add("d-none");
+    }
+  }
+}
+
+/* =========================
+   PARTICIPANTES
+========================= */
+
 function handleAddParticipant() {
   const input = document.getElementById("participantName");
+  if (!input) return;
+
   const name = input.value.trim();
 
   if (typeof validateParticipantName === "function") {
@@ -97,67 +247,10 @@ function handleAddParticipant() {
   renderExclusionSelects();
   renderExclusions();
   renderDragParticipants();
-}
 
-function loadEventFormData() {
-  const data = getData();
-
-  const organizerName = document.getElementById("organizerName");
-  const organizerParticipates = document.getElementById("organizerParticipates");
-  const eventType = document.getElementById("eventType");
-  const customEventName = document.getElementById("customEventName");
-  const eventDate = document.getElementById("eventDate");
-  const budget = document.getElementById("budget");
-  const customBudget = document.getElementById("customBudget");
-  const customEventWrapper = document.getElementById("customEventWrapper");
-  const customBudgetWrapper = document.getElementById("customBudgetWrapper");
-
-  if (!organizerName) return;
-
-  organizerName.value = data.organizer.name || "";
-  organizerParticipates.checked = data.organizer.participates ?? true;
-  eventType.value = data.event.type || "";
-  customEventName.value = data.event.customName || "";
-  eventDate.value = data.event.date || "";
-
-  const predefinedBudgets = ["100", "200", "300", "500"];
-
-  if (predefinedBudgets.includes(String(data.event.budget))) {
-    budget.value = String(data.event.budget);
-    customBudget.value = "";
-  } else if (data.event.budget) {
-    budget.value = "other";
-    customBudget.value = data.event.budget;
-    customBudgetWrapper.classList.remove("d-none");
+  if (typeof initializeDragAndDrop === "function") {
+    initializeDragAndDrop();
   }
-
-  if (data.event.type === "Otro") {
-    customEventWrapper.classList.remove("d-none");
-  }
-}
-
-/* Participantes */
-function handleAddParticipant() {
-  const input = document.getElementById("participantName");
-  const name = input.value.trim();
-
-  if (!name) {
-    showSimpleAlert("Escribe el nombre del participante.");
-    return;
-  }
-
-  const added = addParticipant(name);
-
-  if (!added) {
-    showSimpleAlert("Ese participante ya existe o el nombre no es válido.");
-    return;
-  }
-
-  input.value = "";
-  renderParticipants();
-  renderExclusionSelects();
-  renderExclusions();
-  renderDragParticipants();
 }
 
 function renderParticipants() {
@@ -166,26 +259,35 @@ function renderParticipants() {
 
   const participants = getParticipants();
 
-  if (participants.length === 0) {
+  if (!participants || participants.length === 0) {
     participantsList.innerHTML = `<p class="text-soft mb-0">Aún no hay participantes agregados.</p>`;
     return;
   }
 
   participantsList.innerHTML = participants
-    .map(
-      participant => `
+    .map((participant) => {
+      return `
         <div class="d-flex justify-content-between align-items-center section-card py-3 px-3">
-          <span>${participant.name}</span>
-          <button
-            type="button"
-            class="btn btn-sm btn-soft"
-            onclick="handleRemoveParticipant(${participant.id})"
-          >
-            Eliminar
-          </button>
+          <span>
+            ${participant.name}
+            ${participant.isOrganizer ? '<small class="ms-2 text-soft">(Organizador)</small>' : ""}
+          </span>
+          ${
+            participant.isOrganizer
+              ? ""
+              : `
+                <button
+                  type="button"
+                  class="btn btn-sm btn-soft"
+                  onclick="handleRemoveParticipant(${participant.id})"
+                >
+                  Eliminar
+                </button>
+              `
+          }
         </div>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
@@ -195,9 +297,16 @@ function handleRemoveParticipant(id) {
   renderExclusionSelects();
   renderExclusions();
   renderDragParticipants();
+
+  if (typeof initializeDragAndDrop === "function") {
+    initializeDragAndDrop();
+  }
 }
 
-/* Exclusiones */
+/* =========================
+   EXCLUSIONES
+========================= */
+
 function renderExclusionSelects() {
   const exclusionFrom = document.getElementById("exclusionFrom");
   const exclusionTo = document.getElementById("exclusionTo");
@@ -207,9 +316,7 @@ function renderExclusionSelects() {
   const participants = getParticipants();
 
   const options = participants
-    .map(
-      participant => `<option value="${participant.id}">${participant.name}</option>`
-    )
+    .map((participant) => `<option value="${participant.id}">${participant.name}</option>`)
     .join("");
 
   exclusionFrom.innerHTML = `<option value="">Selecciona un participante</option>${options}`;
@@ -219,6 +326,8 @@ function renderExclusionSelects() {
 function handleAddExclusion() {
   const exclusionFrom = document.getElementById("exclusionFrom");
   const exclusionTo = document.getElementById("exclusionTo");
+
+  if (!exclusionFrom || !exclusionTo) return;
 
   const fromId = Number(exclusionFrom.value);
   const toId = Number(exclusionTo.value);
@@ -247,14 +356,14 @@ function renderExclusions() {
 
   const exclusions = getExclusions();
 
-  if (exclusions.length === 0) {
+  if (!exclusions || exclusions.length === 0) {
     exclusionsList.innerHTML = `<p class="text-soft mb-0">Aún no hay exclusiones registradas.</p>`;
     return;
   }
 
   exclusionsList.innerHTML = exclusions
-    .map(
-      (exclusion, index) => `
+    .map((exclusion, index) => {
+      return `
         <div class="d-flex justify-content-between align-items-center section-card py-3 px-3">
           <span>${exclusion.fromName} no puede regalar a ${exclusion.toName}</span>
           <button
@@ -265,8 +374,8 @@ function renderExclusions() {
             Eliminar
           </button>
         </div>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
@@ -275,87 +384,30 @@ function handleRemoveExclusion(index) {
   renderExclusions();
 }
 
-/* Drag area visual */
+/* =========================
+   DRAG AREA VISUAL
+========================= */
+
 function renderDragParticipants() {
   const dragParticipantsArea = document.getElementById("dragParticipantsArea");
   if (!dragParticipantsArea) return;
 
   const participants = getParticipants();
 
-  if (participants.length === 0) {
+  if (!participants || participants.length === 0) {
     dragParticipantsArea.innerHTML = `<p class="text-soft mb-0">Zona de participantes arrastrables</p>`;
     return;
   }
 
   dragParticipantsArea.innerHTML = participants
-    .map(
-      participant => `
+    .map((participant) => {
+      return `
         <div class="drag-card" draggable="true" data-id="${participant.id}">
           ${participant.name}
         </div>
-      `
-    )
+      `;
+    })
     .join("");
-}
-
-/* =========================
-   DATOS.HTML
-========================= */
-
-function initializeDataPage() {
-  loadEventDataView();
-}
-
-function loadEventDataView() {
-  const data = getData();
-
-  const dataOrganizer = document.getElementById("dataOrganizer");
-  const dataOrganizerParticipation = document.getElementById("dataOrganizerParticipation");
-  const dataEventName = document.getElementById("dataEventName");
-  const dataEventDate = document.getElementById("dataEventDate");
-  const dataBudget = document.getElementById("dataBudget");
-  const dataParticipantsList = document.getElementById("dataParticipantsList");
-  const dataExclusionsList = document.getElementById("dataExclusionsList");
-
-  if (!dataOrganizer) return;
-
-  dataOrganizer.textContent = data.organizer.name || "Sin datos";
-  dataOrganizerParticipation.textContent = data.organizer.participates ? "Sí participa" : "No participa";
-
-  const eventDisplayName =
-    data.event.type === "Otro"
-      ? data.event.customName || "Celebración personalizada"
-      : data.event.type || "Sin datos";
-
-  dataEventName.textContent = eventDisplayName;
-  dataEventDate.textContent = data.event.date || "Sin datos";
-  dataBudget.textContent = data.event.budget ? `$${data.event.budget}` : "Sin datos";
-
-  if (data.participants.length === 0) {
-    dataParticipantsList.innerHTML = `<p class="text-soft mb-0">No hay participantes guardados.</p>`;
-  } else {
-    dataParticipantsList.innerHTML = data.participants
-      .map(
-        participant => `
-          <div class="custom-badge mb-2 me-2">${participant.name}</div>
-        `
-      )
-      .join("");
-  }
-
-  if (data.exclusions.length === 0) {
-    dataExclusionsList.innerHTML = `<p class="text-soft mb-0">No hay exclusiones guardadas.</p>`;
-  } else {
-    dataExclusionsList.innerHTML = data.exclusions
-      .map(
-        exclusion => `
-          <div class="section-card py-3 px-3 mb-2">
-            ${exclusion.fromName} no puede regalar a ${exclusion.toName}
-          </div>
-        `
-      )
-      .join("");
-  }
 }
 
 /* =========================
@@ -370,8 +422,14 @@ function initializeDrawPage() {
 
   if (drawBtn) {
     drawBtn.addEventListener("click", () => {
+      if (typeof validateBeforeDraw === "function") {
+        const isValid = validateBeforeDraw();
+        if (!isValid) return;
+      }
+
       if (typeof generateDraw === "function") {
         generateDraw();
+        renderDrawParticipants();
       } else {
         showSimpleAlert("Aún falta programar la lógica del sorteo en sorteo.js");
       }
@@ -380,7 +438,14 @@ function initializeDrawPage() {
 
   if (saveResultsBtn) {
     saveResultsBtn.addEventListener("click", () => {
-      showSimpleAlert("Cuando esté lista la lógica del sorteo, aquí podrás guardar resultados.");
+      const results = getResults();
+
+      if (!results || results.length === 0) {
+        showSimpleAlert("Primero debes realizar el sorteo.");
+        return;
+      }
+
+      showSimpleAlert("Los resultados ya están guardados en localStorage.");
     });
   }
 }
@@ -391,21 +456,15 @@ function renderDrawParticipants() {
 
   const participants = getParticipants();
 
-  if (participants.length === 0) {
+  if (!participants || participants.length === 0) {
     drawParticipants.innerHTML = `<span class="text-soft">No hay participantes cargados.</span>`;
     return;
   }
 
   drawParticipants.innerHTML = participants
-    .map(
-      participant => `<span class="custom-badge">${participant.name}</span>`
-    )
+    .map((participant) => `<span class="custom-badge">${participant.name}</span>`)
     .join("");
 }
-
-/* =========================
-   UTILIDAD SIMPLE
-========================= */
 
 function showSimpleAlert(message) {
   alert(message);

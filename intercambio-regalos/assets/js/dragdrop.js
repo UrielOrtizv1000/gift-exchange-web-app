@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.location.pathname.includes("evento.html")) return;
-
   initializeDragAndDrop();
 });
 
@@ -10,34 +9,44 @@ function initializeDragAndDrop() {
 
   if (!dragArea || !dropArea) return;
 
-  setupDropZone(dropArea);
   attachDragEvents();
+  setupDropZone(dropArea);
 }
 
 function attachDragEvents() {
   const dragCards = document.querySelectorAll(".drag-card");
 
   dragCards.forEach((card) => {
+    card.removeEventListener("dragstart", handleDragStart);
+    card.removeEventListener("dragend", handleDragEnd);
+
     card.addEventListener("dragstart", handleDragStart);
     card.addEventListener("dragend", handleDragEnd);
   });
 }
 
 function handleDragStart(event) {
-  const participantId = event.target.dataset.id;
+  const card = event.currentTarget;
+  const participantId = card.dataset.id;
+
   if (!participantId) return;
 
   event.dataTransfer.setData("text/plain", participantId);
   event.dataTransfer.effectAllowed = "move";
 
-  event.target.classList.add("dragging");
+  card.classList.add("dragging");
 }
 
 function handleDragEnd(event) {
-  event.target.classList.remove("dragging");
+  event.currentTarget.classList.remove("dragging");
 }
 
 function setupDropZone(dropZone) {
+  dropZone.removeEventListener("dragover", handleDragOver);
+  dropZone.removeEventListener("dragenter", handleDragEnter);
+  dropZone.removeEventListener("dragleave", handleDragLeave);
+  dropZone.removeEventListener("drop", handleDrop);
+
   dropZone.addEventListener("dragover", handleDragOver);
   dropZone.addEventListener("dragenter", handleDragEnter);
   dropZone.addEventListener("dragleave", handleDragLeave);
@@ -55,9 +64,7 @@ function handleDragEnter(event) {
 }
 
 function handleDragLeave(event) {
-  if (!event.currentTarget.contains(event.relatedTarget)) {
-    event.currentTarget.classList.remove("drop-zone-active");
-  }
+  event.currentTarget.classList.remove("drop-zone-active");
 }
 
 function handleDrop(event) {
@@ -123,7 +130,6 @@ function openExclusionSelector(fromId) {
   }
 
   const selectedParticipant = filteredTargets[selectedIndex];
-
   const added = addExclusion(fromId, selectedParticipant.id);
 
   if (!added) {
@@ -141,9 +147,9 @@ function openExclusionSelector(fromId) {
 
   if (typeof renderDragParticipants === "function") {
     renderDragParticipants();
-    attachDragEvents();
   }
 
+  attachDragEvents();
   renderDropZoneFeedback(fromParticipant.name, selectedParticipant.name);
 }
 

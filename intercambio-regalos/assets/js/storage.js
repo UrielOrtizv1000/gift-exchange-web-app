@@ -55,6 +55,42 @@ function saveEventData(eventData) {
   saveData(data);
 }
 
+function syncOrganizerWithParticipants() {
+  const data = getData();
+  const organizerName = data.organizer.name.trim();
+  const organizerParticipates = data.organizer.participates;
+
+  const organizerIndex = data.participants.findIndex(
+    participant => participant.isOrganizer === true
+  );
+
+  if (organizerParticipates && organizerName) {
+    if (organizerIndex !== -1) {
+      data.participants[organizerIndex].name = organizerName;
+    } else {
+      data.participants.unshift({
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        name: organizerName,
+        isOrganizer: true
+      });
+    }
+  } else {
+    if (organizerIndex !== -1) {
+      const organizerId = data.participants[organizerIndex].id;
+
+      data.participants.splice(organizerIndex, 1);
+
+      data.exclusions = data.exclusions.filter(
+        exclusion => exclusion.fromId !== organizerId && exclusion.toId !== organizerId
+      );
+
+      data.results = [];
+    }
+  }
+
+  saveData(data);
+}
+
 function addParticipant(name) {
   const data = getData();
   const cleanName = name.trim();
@@ -68,7 +104,7 @@ function addParticipant(name) {
   if (alreadyExists) return false;
 
   const newParticipant = {
-    id: Date.now(),
+    id: Date.now() + Math.floor(Math.random() * 1000),
     name: cleanName
   };
 
@@ -85,9 +121,7 @@ function removeParticipant(id) {
   );
 
   data.exclusions = data.exclusions.filter(
-    exclusion =>
-      exclusion.fromId !== id &&
-      exclusion.toId !== id
+    exclusion => exclusion.fromId !== id && exclusion.toId !== id
   );
 
   data.results = [];
@@ -101,9 +135,7 @@ function addExclusion(fromId, toId) {
   if (fromId === toId) return false;
 
   const alreadyExists = data.exclusions.some(
-    exclusion =>
-      exclusion.fromId === fromId &&
-      exclusion.toId === toId
+    exclusion => exclusion.fromId === fromId && exclusion.toId === toId
   );
 
   if (alreadyExists) return false;
